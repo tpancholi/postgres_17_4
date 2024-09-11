@@ -11,3 +11,6 @@
 
 ### DB Connection string
 `postgresql://chaiaurcode:chaiaurcode@localhost:5432/chaiDB`
+
+### Reference
+[Youtube](https://youtu.be/EhapnaEKl-w?si=0VTfg76L33E5rFob)
