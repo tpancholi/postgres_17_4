@@ -1,20 +1,37 @@
-version: '3.9'
 services:
   db:
-    image: postgres:16.4-bullseye
-    restart: always
-    volumes:
-      - ./data/db:/var/lib/postgresql/data
-    ports:
-      - 5432:5432  # make sure you don't have another container running on 5432
-
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: custom-postgres
     environment:
-      - POSTGRES_DB=chaiDB
-      - POSTGRES_USER=chaiaurcode
-      - POSTGRES_PASSWORD=chaiaurcode
+      POSTGRES_DB: datamover
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    secrets:
+      - db_password
 
   adminer:
     image: adminer
+    container_name: adminer-service
     restart: always
     ports:
-      - 8080:8080
+      - "8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  db-data:
+
+secrets:
+  db_password:
+    file: ./db-password.txt
+
+networks:
+  backend:
+    driver: bridge
