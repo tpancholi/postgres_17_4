@@ -5,10 +5,11 @@ FROM postgres:17.4 AS builder
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
+    ca-certificates \
     git \
-    uuid-dev \
     postgresql-server-dev-17 \
-    ca-certificates
+    uuid-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 # Clone and build the pg_uuidv7 extension
 WORKDIR /usr/src
