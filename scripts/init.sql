@@ -10,24 +10,21 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Enable hstore extension for storing key-value pairs in a single column
 CREATE EXTENSION IF NOT EXISTS hstore;
 
--- Enable UUID v7 extension - try different extension names depending on which method you used
+-- Enable UUID v7 extension for the fboulnois implementation
 CREATE EXTENSION IF NOT EXISTS pg_uuidv7;
--- If the above fails, try this alternative
--- CREATE EXTENSION IF NOT EXISTS uuid_v7;
 
 -- Creating non-root user and granting privileges to user
 CREATE ROLE myapp_user WITH LOGIN PASSWORD 'pa55word';
 GRANT ALL PRIVILEGES ON DATABASE datamover TO myapp_user;
 
+-- granting table creation on public schema and transfer of ownership
+GRANT USAGE, CREATE ON SCHEMA public TO myapp_user;
+ALTER DATABASE datamover OWNER TO myapp_user;
+
 -- Example table using uuidv7 as primary key
--- Try different function names depending on which extension you're using
 CREATE TABLE example_table (
-    -- For fboulnois/pg_uuidv7
+    -- For fboulnois/pg_uuidv7 implementation
     id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
-    -- Alternatively for other implementations, try:
-    -- id UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
-    -- Or:
-    -- id UUID PRIMARY KEY DEFAULT uuid_v7(),
     name TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -38,6 +35,3 @@ GRANT ALL PRIVILEGES ON TABLE example_table TO myapp_user;
 -- Insert example data using uuidv7
 INSERT INTO example_table (name) VALUES ('Example Record 1');
 INSERT INTO example_table (name) VALUES ('Example Record 2');
-
--- Query to verify data (you can run this after initialization)
--- SELECT * FROM example_table;
